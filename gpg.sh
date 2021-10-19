@@ -67,7 +67,7 @@ esac
 source realname-and-email.sh
 
 # Get comment to distinguish between keys.
-COMMENT="GPG on YubiKey for Datadog"
+COMMENT="GPG on YubiKey for Hyperfine"
 echo "${YELLOW}What is a comment you would like to use to distinguish this key?"
 read -rp "Comment (press Enter to accept '$COMMENT'): ${RESET}" input
 COMMENT=${input:-$COMMENT}

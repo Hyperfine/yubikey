@@ -32,6 +32,7 @@ case $(echo "$OS" | tr "[:upper:]" "[:lower:]") in
         PKG_CHECK_ARGS="list"
         HOMEBREW_PREFIX=$(brew --prefix)
         HOMEBREW_BIN=$HOMEBREW_PREFIX/bin
+        USER_BIN_DIR=${HOME}/.local/bin
         GIT=$HOMEBREW_BIN/git
         GPG=$HOMEBREW_BIN/gpg
         GPG_AGENT=$HOMEBREW_BIN/gpg-agent
@@ -39,7 +40,8 @@ case $(echo "$OS" | tr "[:upper:]" "[:lower:]") in
         YKMAN=$HOMEBREW_BIN/ykman
         CLIP="pbcopy"
         CLIP_ARGS=""
-        PINENTRY="/usr/local/bin/pinentry-tty"
+        PINENTRY_SETUP="${HOMEBREW_BIN}/pinentry-tty"
+        PINENTRY="${HOMEBREW_BIN}/pinentry-mac"
         OPEN="open"
         DEPS=(
             "expect"
@@ -50,7 +52,7 @@ case $(echo "$OS" | tr "[:upper:]" "[:lower:]") in
         )
         set +e
         read -r -d '' NOTIFICATION_CMD << EOF
-osascript -e 'display notification "git wants to sign a commit!" with title "Touch your YubiKey after submitting the User PIN"'
+osascript -e 'display notification "Touch your YubiKey after submitting the User PIN" with title "Git wants to sign a commit!"'
 gpg "\$@"
 if [[ "\$?" -ne 0 ]]; then
     echo "Signing failed, exiting"
@@ -58,7 +60,7 @@ fi
 echo "Sign completed"
 EOF
         set -e
-        NOTIFICATION_SCRIPT_PATH="/usr/local/bin/yubinotif"
+        NOTIFICATION_SCRIPT_PATH="${USER_BIN_DIR}/yubinotif"
         SCDAEMON_CONF="disable-ccid\nreader-port \"$(pcsctest <<< 01 | grep 'Reader 01' | awk -F ': ' '{print $2}' | head -n1)\""
         export HOMEBREW_NO_AUTO_UPDATE=1
         ;;
@@ -71,6 +73,7 @@ EOF
         PKG_CHECK="apt"
         PKG_CHECK_ARGS="show"
         BIN_PATH="/usr/bin"
+        USER_BIN_DIR=${HOME}/.local/bin
         GIT="${BIN_PATH}/git"
         GPG="${BIN_PATH}/gpg"
         GPG_AGENT="${BIN_PATH}/gpg-agent"
@@ -78,14 +81,15 @@ EOF
         YKMAN="${BIN_PATH}/ykman"
         CLIP="${BIN_PATH}/xclip"
         CLIP_ARGS="-selection clipboard -i"
-        PINENTRY="/usr/bin/pinentry-tty"
+        PINENTRY_SETUP="/usr/bin/pinentry-tty"
+        PINENTRY="/usr/bin/pinentry-gnome3"
         OPEN="xdg-open"
         DEPS=(
             "expect"
             "git"
             "gpg"
             "pinentry-tty"
-            "python"
+            "python3"
             "scdaemon"
             "yubikey-manager"
             "xclip"
@@ -100,9 +104,11 @@ fi
 echo "Sign completed"
 EOF
         set -e
-        NOTIFICATION_SCRIPT_PATH="/usr/local/bin/yubinotif"
+        NOTIFICATION_SCRIPT_PATH="${USER_BIN_DIR}/yubinotif"
         SCDAEMON_CONF=""
-        sudo apt-add-repository ppa:yubico/stable
+        if ! grep -rqE '^deb http://ppa.launchpad.net/yubico/stable/ubuntu' /etc/apt/sources.list.d/*.list; then
+            sudo apt-add-repository ppa:yubico/stable
+        fi
         ;;
     arch)
         PKG_MANAGER="pacman"
@@ -113,6 +119,7 @@ EOF
         PKG_CHECK="pacman"
         PKG_CHECK_ARGS="-Qi"
         BIN_PATH="/usr/bin"
+        USER_BIN_DIR=${HOME}/.local/bin
         GIT="${BIN_PATH}/git"
         GPG="${BIN_PATH}/gpg"
         GPG_AGENT="${BIN_PATH}/gpg-agent"
@@ -120,6 +127,7 @@ EOF
         YKMAN="${BIN_PATH}/ykman"
         CLIP="${BIN_PATH}/xclip"
         CLIP_ARGS="-selection clipboard -i"
+        PINENTRY_SETUP="/usr/bin/pinentry"
         PINENTRY="/usr/bin/pinentry"
         OPEN="xdg-open"
         # shellcheck disable=SC2034
@@ -142,7 +150,7 @@ fi
 echo "Sign completed"
 EOF
         set -e
-        NOTIFICATION_SCRIPT_PATH="/usr/local/bin/yubinotif"
+        NOTIFICATION_SCRIPT_PATH="${USER_BIN_DIR}/yubinotif"
         # shellcheck disable=SC2034
         SCDAEMON_CONF=""
         ;;
@@ -167,8 +175,10 @@ export YKMAN
 export CLIP
 export CLIP_ARGS
 export OPEN
+export PINENTRY_SETUP
 export PINENTRY
 export NOTIFICATION_SCRIPT_PATH
+export USER_BIN_DIR
 
 # Colors galore.
 BOLD=$(tput bold)
@@ -257,3 +267,23 @@ function vercomp {
 }
 
 function join { local IFS="$1"; shift; echo "$*"; }
+
+# https://stackoverflow.com/a/44348249
+function install_or_upgrade {
+    local pkg
+    pkg="$1"
+    if "$PKG_CHECK" "$PKG_CHECK_ARGS" "$pkg" >/dev/null; then
+        eval "$PKG_MANAGER_ENV" "$PKG_MANAGER" "$PKG_MANAGER_UPGRADE" "$pkg"
+    else
+        eval "$PKG_MANAGER_ENV" "$PKG_MANAGER" "$PKG_MANAGER_INSTALL" "$pkg"
+    fi
+}
+
+function check_presence {
+    local pkg
+    pkg="$1"
+    if ! "$PKG_CHECK" "$PKG_CHECK_ARGS" "$pkg" >/dev/null 2>&1; then
+        echo "$pkg is missing, please install it"
+        return 1
+    fi
+}

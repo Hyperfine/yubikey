@@ -9,7 +9,7 @@ source env.sh
 echo "${GREEN}Setting the GPG agent for SSH_AUTH_SOCK to handle SSH actions${RESET}"
 echo "${YELLOW}This includes git actions like pushing and pulling from Github${RESET}"
 echo "${YELLOW}If this breaks your workflow, edit your profile to remove it${RESET}"
-echo "${YELLOW}And please open a ticket to let us know: https://github.com/DataDog/yubikey${RESET}"
+echo "${YELLOW}And please open a ticket to let us know: https://github.com/Hyperfine/yubikey${RESET}"
 source lib/ssh_conf.sh
 
 # Export SSH key derived from GPG authentication subkey.
@@ -28,4 +28,4 @@ echo "Great."
 echo
 echo "You will need to ${GREEN}${BOLD}enter your PIN (once a day)${RESET}, and ${GREEN}${BOLD}touch your YubiKey everytime${RESET} in order to use SSH."
 echo
-echo "Enjoy authenticating over SSH with your YubiKey at Datadog!"
+echo "Enjoy authenticating over SSH with your YubiKey at Hyperfine!"

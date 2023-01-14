@@ -37,7 +37,7 @@ repositories, and then use `git config --local` to override `user.signingkey`
 for different repositories.
 
 Alternatively, let us say you use your personal key for open source projects,
-and the one in the YubiKey for Datadog proprietary code. One possible
+and the one in the YubiKey for Hyperfine proprietary code. One possible
 solution is to setup git aliases. First, make sure signing is turned on
 globally:
 
@@ -70,7 +70,7 @@ YubiKey.
 Optional: verify public key on Keybase.  You can now do this using the
 command-line option, with only `curl` and `gpg`, and without installing any
 Keybase app, or uploading an encrypted copy of your private key. For example,
-see this [profile](https://keybase.io/trishankdatadog).
+see this [profile](https://keybase.io/trishankHyperfine).
 
 If you have the [Keybase application](https://keybase.io/docs/the_app/install_macos)
 installed, you can import your YubiKey public key like this:
@@ -146,7 +146,7 @@ Optional: using YubiKey to store the root role key for Docker Notary.
 
     1. `cd ~/go/src/go get github.com/theupdateframework/notary`
 
-    2. `git pull https://github.com/trishankatdatadog/notary.git trishank_kuppusamy/fedora-pkcs11`
+    2. `git pull https://github.com/trishankatHyperfine/notary.git trishank_kuppusamy/fedora-pkcs11`
 
 6. [Build and install](https://github.com/theupdateframework/notary/pull/1285)
    the Notary client: `go install -tags pkcs11
@@ -229,7 +229,7 @@ repositories, and then use `git config --local` to override `user.signingkey`
 for different repositories.
 
 Alternatively, let us say you use your personal key for open source projects,
-and the one in the YubiKey for Datadog proprietary code. One possible
+and the one in the YubiKey for Hyperfine proprietary code. One possible
 solution is to setup git aliases. First, make sure signing is turned on
 globally:
 

@@ -59,7 +59,7 @@ If the rebase seems to hang and the YubiKey flashes, it means you need to touch
 it again.
 
 If you are still having issues when rebasing, you might consider using
-the `--no-gpg-sign` flag as a [workaround](https://github.com/DataDog/yubikey/issues/19).
+the `--no-gpg-sign` flag as a [workaround](https://github.com/Hyperfine/yubikey/issues/19).
 
 ## No PyUSB backend detected
 

@@ -12,7 +12,7 @@ source lib/install.sh
 source realname-and-email.sh
 
 # Get comment to distinguish between keys.
-COMMENT="GPG on YubiKey for Datadog"
+COMMENT="GPG on YubiKey for Hyperfine"
 echo "${YELLOW}What is a comment you would like to use to distinguish this key?"
 read -rp "Comment (press Enter to accept '$COMMENT'): ${RESET}" input
 COMMENT=${input:-$COMMENT}
@@ -169,4 +169,4 @@ if [[ "$TOUCH_POLICY" == "on" ]]; then
 else
   echo "Touch is cached for 15s on sign operations."
 fi
-echo "Enjoy using your YubiKey at Datadog!"
+echo "Enjoy using your YubiKey at Hyperfine!"
